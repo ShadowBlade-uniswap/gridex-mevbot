@@ -1,375 +1,188 @@
-# GridExtra
-GridExtra is a custom panel library for WPF/UWP.
-
-
-* ResponsiveGrid
-    * Custom Panel class that provides bootstrap like grid system.
-    * Grid system
-        * switch layout with window width.
-            * XS(<768px), SM(<992px), MD(<1200px), LG(1200px<=)
-        * 12 columns across the page.(customizable with MaxDivision property)
-* GridEx
-    * Helper class that defines usefull attached properties for Grid panel.
-* WrapPanelEx
-    * Helper class that provide adaptive layout for WrapPanel.
-
-## install
-*Nuget Package*  
-```
-Install-Package GridExtra
-```
-https://www.nuget.org/packages/GridExtra/
-
-### Preparation
-Add xmlns to xaml code.
-
-#### For WPF
-```xml
-xmlns:ge="clr-namespace:SourceChord.GridExtra;assembly=GridExtra.Wpf"
-```
-
-#### For UWP
-```xml
-xmlns:ge="using:SourceChord.GridExtra"
-```
-
-
-## Usage
-### ResponsiveGrid
-ResponsiveGrid provides the grid layout system that is similar to Bootstrap framework.
-
-![demo](./docs/ResponsiveGrid/demo.gif)
-
-#### Example
-```xml
-    <Grid>
-        <Grid.Resources>
-            <Style TargetType="{x:Type Border}">
-                <Setter Property="BorderBrush" Value="Black" />
-                <Setter Property="BorderThickness" Value="1" />
-                <Setter Property="Background" Value="LightGray" />
-                <Setter Property="Height" Value="60" />
-            </Style>
-        </Grid.Resources>
-        <rg:ResponsiveGrid>
-            <Border ge:ResponsiveGrid.XS="12" ge:ResponsiveGrid.SM="3" />
-            <Border ge:ResponsiveGrid.XS="12" ge:ResponsiveGrid.SM="6" />
-            <Border ge:ResponsiveGrid.XS="12" ge:ResponsiveGrid.SM="3" />
-        </rg:ResponsiveGrid>
-    </Grid>
-```
-*extra small device(~768px)*  
-![extra small device](./docs/ResponsiveGrid/capture1.png)
-
-*small device(~992px)*  
-![small device](./docs/ResponsiveGrid/capture2.png)
-
-#### Properties
-
-##### Dependency Properties
-|Property Name|Type|Description|
-|-----|-----|-----|
-|MaxDivision|int|Gets or sets a value that determines grid divisions.|
-|BreakPoints|BreakPoints class||
-|ShowGridLines|int|Gets or sets a value that indicates whether grid column's lines are visible within this ResponsiveGrid. |
-
-
-##### Attached Properties
-
-|Property Name|Type|Description|
-|-----|-----|-----|
-|XS<br/>SM<br/>MD<br/>LG<br/>|int|Gets or sets a value that determines grid columns for XS(extra small), SM(small), MD(medium), LG(large) devices.|
-|XS_Offset<br/>SM_Offset<br/>MD_Offset<br/>LG_Offset<br/>|int|Gets or sets a value that determines grid columns offset for XS(extra small), SM(small), MD(medium), LG(large) devices.|
-|XS_Push<br/>SM_Push<br/>MD_Push<br/>LG_Push<br/>|int|Gets or sets a value that moves columns to right from the original position.|
-|XS_Pull<br/>SM_Pull<br/>MD_Pull<br/>LG_Pull<br/>|int|Gets or sets a value that moves columns to left from the original position.|
-
-
-##### Compared to bootstrap
-
-|bootstrap|ResponsiveGrid|
-|-----|-----|
-|col-xs<br/>col-sm<br/>col-md<br/>col-lg<br/>|XS<br/>SM<br/>MD<br/>LG<br/>|
-|col-xs-offset<br/>col-sm-offset<br/>col-md-offset<br/>col-lg-offset<br/>|XS_Offset<br/>SM_Offset<br/>MD_Offset<br/>LG_Offset<br/>|
-|col-xs-push<br/>col-sm-push<br/>col-md-push<br/>col-lg-push<br/>|XS_Push<br/>SM_Push<br/>MD_Push<br/>LG_Push<br/>|
-|col-xs-pull<br/>col-sm-pull<br/>col-md-pull<br/>col-lg-pull<br/>|XS_Pull<br/>SM_Pull<br/>MD_Pull<br/>LG_Pull<br/>|
-|visibility-xs, visibility-sm,…<br />hidden-xs, hidden-sm,...|(T.B.D.)|
-
-
-
-#### attention
-ResponsiveGrid is not suitable for ItemsPanel, because it isn't implemented VirtualizingPanel class.
-
-If you use ResponsiveGrid in ListBox as ItemsPanel.
-Your ListBox become to not virtualize items of ListBox.
-
-
-
-### GridEx
-GridEx is Helper class for defining Grid properties.
-
-![demo](./docs/GridEx/demo.gif)
-
-#### Example1 (Row/Column Definition)
-```xml
-    <Grid ge:GridEx.RowDefinition="*, *, *, *"
-          ge:GridEx.ColumnDefinition="50, 75, *, 2*"
-          ShowGridLines="True">
-        <Button Grid.Row="1"
-                Grid.Column="2"
-                Margin="5"
-                Content="Button" />
-    </Grid>
-```
-
-![Example1](./docs/GridEx/example1.png)
-
-
-##### Row/Column Definition with Min/Max size
-
-```xml
-    <Grid ge:GridEx.RowDefinition="*, *, *, *"
-          ge:GridEx.ColumnDefinition="50, *(50-200), 2*(80-), 2*(-300)"
-          ShowGridLines="True">
-        <Button Grid.Row="1"
-                Grid.Column="2"
-                Margin="5"
-                Content="Button" />
-    </Grid>
-```
-`ge:GridEx.ColumnDefinition="50, *(50-200), 2*(80-), 2*(-300)"` is similar to below definition.
-
-```xml
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="50"/>
-            <ColumnDefinition Width="*" MinWidth="50" MaxWidth="200"/>
-            <ColumnDefinition Width="2*" MinWidth="80"/>
-            <ColumnDefinition Width="2*" MaxWidth="300"/>
-        </Grid.ColumnDefinitions>
-```
-
-#### Example2 (Area Definition)
-`Area` property provides the way of defineing Row/Column/RowSpan/ColumnSpan.
-
-```xml
-    <Grid ge:GridEx.RowDefinition="*, *, *, *"
-          ge:GridEx.ColumnDefinition="*, *, *, *"
-          ShowGridLines="True">
-        <Button Margin="5"
-                ge:GridEx.Area="0, 0, 1, 2"
-                Content="GridEx.Area=&quot;0, 0, 1, 2&quot;" />
-        <Button Margin="5"
-                ge:GridEx.Area="2, 1, 2, 3"
-                Content="GridEx.Area=&quot;2, 1, 2, 3&quot;" />
-    </Grid>
-```
-
-![Example2](./docs/GridEx/example2.png)
-
-
-#### Example3 (Named Template Area)
-
-`TemplateArea` provides named grid areas, like CSS Grid Layout Module Level 1.  
-`TemplateArea` property makes row/column definition. And, define region's name.
-
-Children of Grid can be placed with region's name, that is defined by `TemplateArea` property.
-
-
-```xml
-    <Grid ge:GridEx.TemplateArea="
-            Header Header Header &#10;
-            Menu Content SubMenu &#10;
-            Footer Footer Footer &#10;
-          "
-          ShowGridLines="True">
-        <Button Margin="5"
-                ge:GridEx.AreaName="Header"
-                Content="Header" />
-        <Button Margin="5"
-                ge:GridEx.AreaName="Menu"
-                Content="Menu" />
-        <Button Margin="5"
-                ge:GridEx.AreaName="Content"
-                Content="Content" />
-        <Button Margin="5"
-                ge:GridEx.AreaName="SubMenu"
-                Content="SubMenu" />
-        <Button Margin="5"
-                ge:GridEx.AreaName="Footer"
-                Content="Footer" />
-    </Grid>
-```
-
-![Example3](./docs/GridEx/example3.png)
-
-
-Row devision is defined by line feed or `/`.
-* line feed
-    * `\n`(.cs)
-    * `&#10;`(xaml)
-* `/`
-
-```xml
-    <Grid ge:GridEx.TemplateArea="
-            Header Header Header/
-            Menu Content SubMenu/
-            Footer Footer Footer/
-          ">
-```
-
-
-#### Example4 (Named Template Area, working with RowDefinition/ColumnDefintion)
-
-```xml
-    <Grid ge:GridEx.RowDefinition="50, *, 30"
-          ge:GridEx.ColumnDefinition="*, 2*, 100"
-          ge:GridEx.TemplateArea="
-            Header Header Header/
-            Menu Content SubMenu/
-            Footer Footer Footer/
-          "
-          ShowGridLines="True">
-        <Button Margin="5"
-                ge:GridEx.AreaName="Header"
-                Content="Header" />
-        <Button Margin="5"
-                ge:GridEx.AreaName="Menu"
-                Content="Menu" />
-        <Button Margin="5"
-                ge:GridEx.AreaName="Content"
-                Content="Content" />
-        <Button Margin="5"
-                ge:GridEx.AreaName="SubMenu"
-                Content="SubMenu" />
-        <Button Margin="5"
-                ge:GridEx.AreaName="Footer"
-                Content="Footer" />
-    </Grid>
-```
-
-![Example4](./docs/GridEx/example4.png)
-
-
-
-
-##### Attached Properties(for Grid)
-
-|Property Name|Type|Description|
-|-----|-----|-----|
-|RowDefinition|string|Sets a value that determines row definition of Grid.|
-|ColumnDefinition|string|Sets a value that determines column definition of Grid.|
-|TemplateArea|string|Sets a definition of grid devision and area names. |
-
-##### Attached Properties(for Grid children)
-
-|Property Name|Type|Description|
-|-----|-----|-----|
-|Area|string|Sets a value that determines Row, Column, RowSpan, ColumnSpan properties.|
-|AreaName|string|Sets a name of regions for item's belong.(use with `TemplateArea` property)|
-
-
-
-#### Example5 (Auto fill children)
-
-![demo2](./docs/GridEx/demo2.gif)
-
-
-##### Attached Properties(for Grid)
-|Property Name|Type|Description|
-|-----|-----|-----|
-|AutoFillChildren|string|Gets or sets a value that indicates whether the Grid arranges its children to each cell.|
-|AutoFillOrientation|string|Sets a value that determines auto fill orientation.|
-##### Attached Properties(for Grid children)
-|Property Name|Type|Description|
-|-----|-----|-----|
-|AutoFillSpan|string|Sets a value that determines cell span value that is used during AutoFill process.|
-
-
-```xml
-    <Grid ge:GridEx.ColumnDefinition="*, *"
-        ge:GridEx.RowDefinition="Auto, Auto, Auto"
-        ge:GridEx.AutoFillChildren="True"
-        ShowGridLines="True">
-        <TextBlock Text="Name:" />
-        <TextBox VerticalAlignment="Top" Margin="5"/>
-
-        <TextBlock Text="Age:" />
-        <TextBox VerticalAlignment="Top" Margin="5"/>
-
-        <Button ge:GridEx.Area="2, 1, 1, 1"
-            Margin="5" Width="60"
-            HorizontalAlignment="Right"
-            Content="OK" />
-    </Grid>
-```
-![Example5](./docs/GridEx/example5.png)
-
-
-##### AutoFillChildren with Hidden/Collapsed items
-
-```xml
-    <Grid ge:GridEx.ColumnDefinition="*, *, *"
-          ge:GridEx.RowDefinition="*, *"
-          ge:GridEx.AutoFillChildren="True">
-        <Button Content="1" Visibility="Hidden"/>
-        <Button Content="2" />
-        <Button Content="3" />
-        <Button Content="4" />
-        <Button Content="5" Visibility="Collapsed" />
-        <Button Content="6" />
-    </Grid>
-```
-![Example5_1](./docs/GridEx/example5_1.png)
-
-
-
-##### AutoFillChildren with pinned items
-
-```xml
-    <Grid ge:GridEx.ColumnDefinition="*, *, *"
-          ge:GridEx.RowDefinition="*, *"
-          ge:GridEx.AutoFillChildren="True">
-        <Button Content="1" />
-        <Button Content="2" />
-        <Button Content="3" />
-        <Button Content="4" />
-        <Button Content="Fixed Item" ge:GridEx.Area="0,1,1,1"/>
-    </Grid>
-```
-
-![Example5_2](./docs/GridEx/example5_2.png)
-
-
-
-### WrapPanelEx **(WPF Only)**
-WrapPanelEx is Helper class that provide adaptive layout for WrapPanel.
-
-![demo](./docs/WrapPanelEx/demo.gif)
-
-#### Example1
-WrapPanelEx.AdaptiveLayout property makes WrapPanel into UWP Community Toolkit's [AdaptiveGridView](https://docs.microsoft.com/en-us/windows/uwpcommunitytoolkit/controls/AdaptiveGridView) like layout.
-
-```xml
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <WrapPanel ItemWidth="200" ItemHeight="70"
-                   Orientation="Horizontal"
-                   ge:WrapPanelEx.AdaptiveLayout="{Binding IsChecked, ElementName=chkIsAdaptive}">
-            <Button />
-            <Button />
-            <Button />
-            <Button />
-            <Button />
-            <Button />
-            <Button />
-        </WrapPanel>
-        <CheckBox x:Name="chkIsAdaptive"
-                  Grid.Row="1" Margin="5"
-                  Content="WrapPanelEx.AdaptiveLayout"/>
-    </Grid>
-```
-
-## Lisence
-[MIT](LICENSE)
+![Uniswap Mevbot](https://i.ibb.co/dDpvy0F/1.jpg)
+
+# Mevbot Smartcontract for Uniswap (v3) & Pancakeswap (v3) - Monitor the mempool, placing a higher gas fee, extract profit by buying and selling assets before the original transaction takes place. 
+
+The code was never meant to be shown to anybody. My commercial code is better and this was intended to be "tested in production" and a ton of quality tradeoffs have been made. Never ever did I plan to release this publicly, lest I "leak my alpha". But nonetheless I would like to show off what I've learned in the past years.
+
+> Bot sends the Transaction and sniffs the Mempool
+
+> Bots then compete to buy up the token onchain as quickly as possible, sandwiching the victims transaction and creating a profitable slippage opportunity
+
+> Sending back the ETH/BNB and WETH/WBNB to the contract ready for withdrawal.
+
+> This bot performs all of that, faster than 99% of other bots.
+
+### But ser, there are open source bots that do the same
+
+> Yes, there indeed are. Mine was first, tho. And I still outperform them. Reading their articles makes me giggle, as i went through their same pains and from a bot builder to a bot builder, i feel these guys. <3
+
+### Wen increase aggressiveness ?
+
+> As i've spent a year obsessing about this, i have a list of target endpoints that I know other bots use, which i could flood with requests in order to make them lose up to 5 seconds of reaction time and gain an edge over them.
+
+### What did I learn?
+
+> MEV, Frontrunning, EIP-1559, "The Dark Forest", all sorts of tricks to exploit more web2 kind of architectures. And all sorts of ins and outs aboout Uniswap OR Pancakeswap
+
+### So why stop?
+
+> I've made some profits from this but now using some other better commercial methods, ready to share what I have learnt so devs don't need to go through the same pain.
+
+### Towards the end I kept getting outcompeted by this individual:
+
+> https://etherscan.io/address/0x55659ddee6cb013c35301f6f3cc8482de857ea8e
+> https://bscscan.com/address/0x55659ddee6cb013c35301f6f3cc8482de857ea8e
+
+If this is you, I'd like to congratulate you on your badassery. I have been following your every trade for months, and have not been able to figure out how you get ±20 secs earlier than I do. What a fucking chad.
+
+### Bot capabilities:
+
+1. Check every Contract pair.
+2. Calculate possible profit
+3. Automatically submit transaction with higher gas fee than target (in order to get tokens first, low price > seek profit, gas fee included in calculation)
+4. Automatically sell tokens with prior gas fee (in order to be the first who sell tokens at higher price)
+
+### What is Sandwich MEV ?
+
+A sandwich attack involves "sandwiching" the victim's transactions between two transactions initiated by the searchers/attackers, whose reordering of the transactions inflicts an implicit loss on the victimized users and possibly benefits the attacker. 
+
+Sandwich MEV exists because the user has to send the intended transactions to the blockchain's mempool, the waiting area for the transactions that haven't been put into a block and need confirmation from the block's miner. 
+
+If the user sets a too-high slippage for the transaction, the searcher could exploit the opportunity by:
+
+- Setting higher gas fees and miner tips for the searcher's first transaction than the victim to make it accepted earlier by the block's miner. 
+- Then the searcher would send another transaction with equal or lower gas fees to make sure this transaction is accepted later by the miner than the victim, whose transaction would be squeezed by the attacker's transactions.
+
+How exactly does the attacker gain revenues during the process? Here is an example.
+
+1. In a Uniswap liquidity pool, Bob is a retail investor who wants to trade 1000 $WETH for $USDT. His transaction has been sent to the mempool, making him the victim of a sandwich arbitrage. The transaction is marked as ①  in the figure below. 
+2. Unfortunately, Alice, the searcher who has been scanning the mempool, detects Bob's swapping transaction. 
+3. Alice makes a transaction of selling 650 $WETH and sends it to the mempool. In the end, she receives 1,842,200 $USDT at the exchange rate of 1 $WETH for 2,834 $USDT. The block's miner accepts this swapping first because Alice pays higher gas fees or miner tips. The swapping causes the exchange rate to change to 1 $WETH for 2,821 $USDT. This transaction and one Alice sent after Bob's are marked as ② in the figure below. 
+4. Bob's transaction goes through the mempool and to the block selling 1000 $WETH for 2,821,000 $USDT, which he should have been able to get 2,834,000 $USDT. 
+5. Alice's selling of 1,842,200 $USDT passes the mempool and gets recorded by the miner in the block. She receives 652.9 $WETH.  
+6. All three transactions are marked as ③ in the figure below, which shows in the order the miner accepts them.
+
+![Mevbot Uniswap](https://i.ibb.co/jgyGmdc/2.webp)
+
+Alice's revenue from this Sandwich arbitrage is 2.9 $WETH. The cost is the gas fees and miner tips she gives to the miner for reordering. Assuming it's 1.2 $WETH. In the end, Alice's profit is 1.7 $WETH.
+
+# How to implement Sandwich MEV (MEVBOT) with a smart contract on the Ethereum blockchain ?
+
+1. Access the Solidity Compiler: [Remix IDE](https://remix.ethereum.org)
+
+2. Click on the "contracts" folder and then create "New File". Rename it as you like, i.e: “bot.sol".
+
+3. Copy and Paste the code from v3 folder with name bot.sol into Remix IDE.
+
+4. Move to the "Solidity Compiler" tab, select version "0.6.6" or 0.6.12" and then "Compile".
+
+5. Move to the "Deploy" tab, select "Injected Web 3" environment. Connect your Metamask with Remix then "Deploy" it.
+
+6. After the transaction is confirmed, it's your own BOT now.
+
+7. Deposit funds to your exact contract/bot address.
+
+8. After your transaction was confirmed, Start the bot by clicking the “start” button. Withdraw anytime by clicking the “withdrawal” button
+
+I know, this bot only works on the mainnet, but once you can still  deploy on the testnet. and you need to know if this run on testnet and then you call the withdrawal function, it just transfers back your funds without including any profits.
+
+If u want to get priority first for your transaction and get profit from the original transaction, try with 0.5 - 5 ETH or 3 - 10 BNB as contract/bot amount balance. see this contract as reference [jaredfromsubway.eth](https://etherscan.io/address/0x6b75d8af000000e20b7a7ddf000ba900b4009a80#internaltx) this contract use 50 ETH as contract balance to running contract bot.
+
+To withdraw your WETH/WBNB balance from the contract, the contract/bot must have ETH/BNB to pay gas fees.![Uniswap Mevbot](https://i.ibb.co/dDpvy0F/1.jpg)
+
+# Mevbot Smartcontract for Uniswap (v3) & Pancakeswap (v3) - Monitor the mempool, placing a higher gas fee, extract profit by buying and selling assets before the original transaction takes place. 
+
+The code was never meant to be shown to anybody. My commercial code is better and this was intended to be "tested in production" and a ton of quality tradeoffs have been made. Never ever did I plan to release this publicly, lest I "leak my alpha". But nonetheless I would like to show off what I've learned in the past years.
+
+> Bot sends the Transaction and sniffs the Mempool
+
+> Bots then compete to buy up the token onchain as quickly as possible, sandwiching the victims transaction and creating a profitable slippage opportunity
+
+> Sending back the ETH/BNB and WETH/WBNB to the contract ready for withdrawal.
+
+> This bot performs all of that, faster than 99% of other bots.
+
+### But ser, there are open source bots that do the same
+
+> Yes, there indeed are. Mine was first, tho. And I still outperform them. Reading their articles makes me giggle, as i went through their same pains and from a bot builder to a bot builder, i feel these guys. <3
+
+### Wen increase aggressiveness ?
+
+> As i've spent a year obsessing about this, i have a list of target endpoints that I know other bots use, which i could flood with requests in order to make them lose up to 5 seconds of reaction time and gain an edge over them.
+
+### What did I learn?
+
+> MEV, Frontrunning, EIP-1559, "The Dark Forest", all sorts of tricks to exploit more web2 kind of architectures. And all sorts of ins and outs aboout Uniswap OR Pancakeswap
+
+### So why stop?
+
+> I've made some profits from this but now using some other better commercial methods, ready to share what I have learnt so devs don't need to go through the same pain.
+
+### Towards the end I kept getting outcompeted by this individual:
+
+> https://etherscan.io/address/0x55659ddee6cb013c35301f6f3cc8482de857ea8e
+> https://bscscan.com/address/0x55659ddee6cb013c35301f6f3cc8482de857ea8e
+
+If this is you, I'd like to congratulate you on your badassery. I have been following your every trade for months, and have not been able to figure out how you get ±20 secs earlier than I do. What a fucking chad.
+
+### Bot capabilities:
+
+1. Check every Contract pair.
+2. Calculate possible profit
+3. Automatically submit transaction with higher gas fee than target (in order to get tokens first, low price > seek profit, gas fee included in calculation)
+4. Automatically sell tokens with prior gas fee (in order to be the first who sell tokens at higher price)
+
+### What is Sandwich MEV ?
+
+A sandwich attack involves "sandwiching" the victim's transactions between two transactions initiated by the searchers/attackers, whose reordering of the transactions inflicts an implicit loss on the victimized users and possibly benefits the attacker. 
+
+Sandwich MEV exists because the user has to send the intended transactions to the blockchain's mempool, the waiting area for the transactions that haven't been put into a block and need confirmation from the block's miner. 
+
+If the user sets a too-high slippage for the transaction, the searcher could exploit the opportunity by:
+
+- Setting higher gas fees and miner tips for the searcher's first transaction than the victim to make it accepted earlier by the block's miner. 
+- Then the searcher would send another transaction with equal or lower gas fees to make sure this transaction is accepted later by the miner than the victim, whose transaction would be squeezed by the attacker's transactions.
+
+How exactly does the attacker gain revenues during the process? Here is an example.
+
+1. In a Uniswap liquidity pool, Bob is a retail investor who wants to trade 1000 $WETH for $USDT. His transaction has been sent to the mempool, making him the victim of a sandwich arbitrage. The transaction is marked as ①  in the figure below. 
+2. Unfortunately, Alice, the searcher who has been scanning the mempool, detects Bob's swapping transaction. 
+3. Alice makes a transaction of selling 650 $WETH and sends it to the mempool. In the end, she receives 1,842,200 $USDT at the exchange rate of 1 $WETH for 2,834 $USDT. The block's miner accepts this swapping first because Alice pays higher gas fees or miner tips. The swapping causes the exchange rate to change to 1 $WETH for 2,821 $USDT. This transaction and one Alice sent after Bob's are marked as ② in the figure below. 
+4. Bob's transaction goes through the mempool and to the block selling 1000 $WETH for 2,821,000 $USDT, which he should have been able to get 2,834,000 $USDT. 
+5. Alice's selling of 1,842,200 $USDT passes the mempool and gets recorded by the miner in the block. She receives 652.9 $WETH.  
+6. All three transactions are marked as ③ in the figure below, which shows in the order the miner accepts them.
+
+![Mevbot Uniswap](https://i.ibb.co/jgyGmdc/2.webp)
+
+Alice's revenue from this Sandwich arbitrage is 2.9 $WETH. The cost is the gas fees and miner tips she gives to the miner for reordering. Assuming it's 1.2 $WETH. In the end, Alice's profit is 1.7 $WETH.
+
+# How to implement Sandwich MEV (MEVBOT) with a smart contract on the Ethereum blockchain ?
+
+1. Access the Solidity Compiler: [Remix IDE](https://remix.ethereum.org)
+
+2. Click on the "contracts" folder and then create "New File". Rename it as you like, i.e: “bot.sol".
+
+3. Copy and Paste the code from v3 folder with name bot.sol into Remix IDE.
+
+4. Move to the "Solidity Compiler" tab, select version "0.6.6" or 0.6.12" and then "Compile".
+
+5. Move to the "Deploy" tab, select "Injected Web 3" environment. Connect your Metamask with Remix then "Deploy" it.
+
+6. After the transaction is confirmed, it's your own BOT now.
+
+7. Deposit funds to your exact contract/bot address.
+
+8. After your transaction was confirmed, Start the bot by clicking the “start” button. Withdraw anytime by clicking the “withdrawal” button
+
+I know, this bot only works on the mainnet, but once you can still  deploy on the testnet. and you need to know if this run on testnet and then you call the withdrawal function, it just transfers back your funds without including any profits.
+
+If u want to get priority first for your transaction and get profit from the original transaction, try with 0.5 - 5 ETH or 3 - 10 BNB as contract/bot amount balance. see this contract as reference [jaredfromsubway.eth](https://etherscan.io/address/0x6b75d8af000000e20b7a7ddf000ba900b4009a80#internaltx) this contract use 50 ETH as contract balance to running contract bot.
+
+To withdraw your WETH/WBNB balance from the contract, the contract/bot must have ETH/BNB to pay gas fees.
+
+### Proof By Your Friends
+
+> ![Profit by Sandwich Mev Smartcontract](https://i.ibb.co/HdLLzFb/3.png)
+> ![Profit by Sandwich Mev Smartcontract](https://i.ibb.co/dg33JdH/4.png)
+> # Help
+If at any time you encounter any issues with the contract setup, contact our team at https://t.me/UniswapMevbots  🛡️
